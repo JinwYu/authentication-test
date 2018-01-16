@@ -20,6 +20,8 @@ myApp.controller('AppCtrl', ['$scope', '$http', function($scope, $http) {
     	// Make the gamelist available in the index.html file.
     	$scope.gamelist =  response.data;
     	console.log("The client has received the data list from the database.")
+
+      console.log(response.data);
     	
     	//n_items = response.data.length;
     	//console.log("The nr of items " + n_items);
