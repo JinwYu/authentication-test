@@ -1,6 +1,6 @@
-<html>
+<html ng-app="myApp">
   <head>
-    <title>Centralized Login</title>
+    <title> GAME COLLECTION </title>
     <base href="/">
     <!-- Viewport settings-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -19,6 +19,129 @@
 
     </div>
 
+
+
+
+
+
+
+
+
+    <div class="container" ng-controller="AppCtrl" style="overflow-x:auto;">
+
+      <div id="wrapper">
+        <header><h1> </h1><h2>  </h2></header>
+
+        <button id="addbutton" class="btn btn-primary" ng-model="addbtnPressed" ng-init="addbtnPressed = false" ng-click="addbtnPressed = true" ng-hide="addbtnPressed == true">
+          <span class="glyphicon glyphicon-plus"></span>
+        </button>
+
+        <form id="searchbox" class="form-inline">
+          <div class="form-group" ng-hide="addbtnPressed == true">
+            <label ></label>
+            <input type="text" ng-model="search" class="form-control" placeholder="Search">
+          </div>
+        </form>
+
+        <p></p> 
+
+        <table class="table" id="tableHeaderAdd">
+          <tbody>
+            <tr>
+              <td ng-hide="addbtnPressed == false"><input class="form-control" placeholder="Title" ng-model="game.title"></td>
+              <td ng-hide="addbtnPressed == false"><input class="form-control" placeholder="Platform" ng-model="game.platform"></td>
+              <td ng-hide="addbtnPressed == false"><input class="form-control" placeholder="Genre" ng-model="game.genre"></td>
+              <td ng-hide="addbtnPressed == false"><input class="form-control" placeholder="Price" ng-model="game.price"></td>
+              <td ng-hide="addbtnPressed == false"><input class="form-control" placeholder="Comment" ng-model="game.comment"></td>  
+
+              <td ng-hide="addbtnPressed == false"><button class="btn btn-primary" ng-click="addItem(); addbtnPressed = false">
+                <span class="glyphicon glyphicon-floppy-disk"></span>
+              </button></td>  
+
+              <td ng-hide="addbtnPressed == false"><button class="btn btn-danger" ng-click="addbtnPressed = false">
+                <span class="glyphicon glyphicon-remove"></span>
+              </button></td>  
+            </tr>
+          </tbody>
+        </table>
+
+        <table class="table table-hover" id="tableData">
+          <thead>
+              <tr>
+                <th scope="row">#</th>
+                <th ng-click="sort('title')">
+                  <span class="glyphicon sort-icon" ng-show="sortKey=='title'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                Title</th>
+                <th ng-click="sort('platform')">
+                  <span class="glyphicon sort-icon" ng-show="sortKey=='platform'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                Platform</th>
+                <th ng-click="sort('genre')">
+                  <span class="glyphicon sort-icon" ng-show="sortKey=='genre'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                Genre</th>
+                <th ng-click="sort('price')">
+                  <span class="glyphicon sort-icon" ng-show="sortKey=='price'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                Price ({{getTotal('price')}} SEK)</th>
+                <th>Comment</th>        
+              </tr>
+          </thead>          
+
+          <tr dir-paginate="gameobject in gamelist|orderBy:sortKey:reverse|filter:search|itemsPerPage:20" ng-click="edit(gameobject._id)">
+
+            <td scope="row">
+              {{$index + 1}}
+            </td>
+            <td ng-hide="editMode">{{gameobject.title}}</td>
+            <td ng-hide="editMode">{{gameobject.platform}}</td>
+            <td ng-hide="editMode">{{gameobject.genre}}</td>
+            <td ng-hide="editMode">{{gameobject.price}}</td>
+            <td ng-hide="editMode">{{gameobject.comment}}</td>
+
+            <td ><input ng-show="editMode" class="form-control" ng-model="gameobject.title"></td>
+            <td ><input ng-show="editMode" class="form-control" ng-model="gameobject.platform"></td>
+            <td ><input ng-show="editMode" class="form-control" ng-model="gameobject.genre"></td>
+            <td ><input ng-show="editMode" class="form-control" ng-model="gameobject.price"></td>
+            <td ><input ng-show="editMode" class="form-control" ng-model="gameobject.comment"></td>
+
+            <td><button ng-show="editMode" class="btn btn-info" ng-click="editMode = false; updateItem(gameobject)">
+              <span class="glyphicon glyphicon-ok"></span>
+            </button></td>
+
+                    
+
+            <td><button ng-show="editMode" class="btn btn-warning" ng-click="editMode = false; resetToPrevRow(gameobject)" >
+              <span class="glyphicon glyphicon-remove"></span>
+            </button></td>
+
+            <td><button ng-show="editMode" class="btn btn-danger" ng-click="editMode = false; deleteItem(gameobject._id)">
+              <span class="glyphicon glyphicon-trash"></span>
+            </button></td>
+            
+            <td><button ng-hide="editMode" class="btn btn-warning" ng-click="editMode = true; editItem(gameobject)">
+              <span class="glyphicon glyphicon-pencil"></span>
+            </button></td>
+
+          </tr>
+
+        </table>
+
+        <dir-pagination-controls
+          max-size="5"
+          direction-links="true"
+          boundary-links="true" >
+        </dir-pagination-controls>        
+
+      </div>
+
+    </div>
+
+
+
+
+
+
+
+ 
+
     <script type="text/javascript" src="auth0-variables.js"></script>
     <script type="text/javascript" src="node_modules/angular/angular.js"></script>
     <script type="text/javascript" src="node_modules/@uirouter/angularjs/release/angular-ui-router.js"></script>
@@ -30,5 +153,16 @@
     <script type="text/javascript" src="app/home/home.controller.js"></script>
     <script type="text/javascript" src="app/callback/callback.controller.js"></script>
     <script type="text/javascript" src="app/auth/auth.service.js"></script>
+
+
+
+     <!-- 
+    
+  -->
+
+    <script type="text/javascript" src="app/controllers/controller.js"></script>
+    <script type="text/javascript" src="lib/dirPagination.js"></script> 
+
+
   </body>
 </html>
