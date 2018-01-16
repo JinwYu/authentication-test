@@ -13,7 +13,7 @@ myApp.controller('AppCtrl', ['$scope', '$http', function($scope, $http) {
 		// Send a request to the server.
      	method: 'GET',
      	// The data will be retrieved from the route "gamelist".
-     	url: '/gamelist'
+     	url: '/http://0.0.0.0:3002/gamelist'
     })
     .then(function(response) {
     	console.log("The controller has received the data it requested from the server.");
