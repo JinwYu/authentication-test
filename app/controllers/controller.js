@@ -2,18 +2,54 @@
 var myApp = angular.module('myApp', ['app', 'angularUtils.directives.dirPagination']);
 
 
+myApp.config(['$httpProvider', function($httpProvider) {
+    $httpProvider.defaults.useXDomain = true;
+    delete $httpProvider.defaults.headers.common["X-Requested-With"];
+}]);
+
+
+myApp.factory('factorylol', function($http){
+  return{
+    doCrossDomainGet: function() {
+                return $http({
+                    url:'http://localhost:8000/gamelist',
+                    method: 'GET'
+                })
+    }   
+  }
+});
+
+
+
+
 // Using $scope and $http for this controller.
-myApp.controller('AppCtrl', ['$scope', '$http', function($scope, $http) {
+myApp.controller('AppCtrl', ['$scope', '$http', 'factorylol', function($scope, $http, factorylol) {
 	
 	var n_items = 0;
 
 	$scope.newField = {};
 
+  factorylol.doCrossDomainGet().
+    then(function(response) {
+      console.log("The controller has received the data it requested from the server.");
+      // Make the gamelist available in the index.html file.
+      $scope.gamelist =  response.data;
+      console.log("The client has received the data list from the database.")
+
+      console.log(response.data);
+      
+      //n_items = response.data.length;
+      //console.log("The nr of items " + n_items);
+    });
+
+ 
+
+  /*
 	$http({
 		// Send a request to the server.
      	method: 'GET',
      	// The data will be retrieved from the route "gamelist".
-     	url: '/http://0.0.0.0:3002/gamelist'
+     	url: 'http://localhost:8000/gamelist'
     })
     .then(function(response) {
     	console.log("The controller has received the data it requested from the server.");
@@ -21,11 +57,12 @@ myApp.controller('AppCtrl', ['$scope', '$http', function($scope, $http) {
     	$scope.gamelist =  response.data;
     	console.log("The client has received the data list from the database.")
 
-      console.log(response.data);
+      //console.log(response.data);
     	
     	//n_items = response.data.length;
     	//console.log("The nr of items " + n_items);
     });
+    */
 
     // Function to sum the prices of the games.
     $scope.getTotal = function(columnKey) {
@@ -71,7 +108,7 @@ myApp.controller('AppCtrl', ['$scope', '$http', function($scope, $http) {
 			// Send newly created game object to the server.
 			$http({
 				method: 'POST',
-				url: '/gamelist',
+				url: 'http://localhost:8000/gamelist',
 				data: $scope.game
 			})
 			.then(function(response) {
@@ -98,7 +135,7 @@ myApp.controller('AppCtrl', ['$scope', '$http', function($scope, $http) {
     	//console.log(id);
 
     	// Send the id of the object to remove from the database to the server.
-    	$http.delete('/gamelist/' + id)
+    	$http.delete('http://localhost:8000/gamelist/' + id)
     	.then(function(response) {
 			// Update the entries on the table by removing the removed object.
 			for (var idx = 0; idx < $scope.gamelist.length; idx++) {
@@ -131,7 +168,7 @@ myApp.controller('AppCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.updateItem = function(item) {
     	// Send the url to the updated item as the first argument,
     	// the second argument is the game object that will be sent to the server.
-    	$http.put('/gamelist/' + item._id, item)
+    	$http.put('http://localhost:3001/gamelist/' + item._id, item)
     	.then(function(response){
 
     		console.log("The client has received the updated item.")
